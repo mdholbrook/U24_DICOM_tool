@@ -133,16 +133,16 @@ X = X.img;
 %% Check that X has been converted to HU
 
 % Find maxima in the histogram - can be buggy
-ahu = (max(X(:)) - min(X(:))) > 1000;
-
-if ~ahu
-    
-    warning('ERROR: DICOM conversion requires volume in HU')
-    warning('Aborting conversion to DICOM')
-    
-    return
-    
-end
+% ahu = (max(X(:)) - min(X(:))) > 1000;
+% 
+% if ~ahu
+%     
+%     warning('ERROR: DICOM conversion requires volume in HU')
+%     warning('Aborting conversion to DICOM')
+%     
+%     return
+%     
+% end
 
 %% Prepare header
 
@@ -232,6 +232,8 @@ if ~exist(save_path, 'dir'), mkdir(save_path); end
 
 % Convert volume to 16 bit
 % Rescale images
+dicom_header.RescaleIntercept = min(X(:));
+dicom_header.RescaleSlope = max(X(:) - min(X(:))) / (2^16 - 1);
 X = uint16(( X - dicom_header.RescaleIntercept ) / dicom_header.RescaleSlope );
 
 
@@ -252,7 +254,8 @@ for z = 1:slices
     end
     
     % Create file name
-    sname = sprintf('%s\\%s.%04d.dcm', save_path, dicom_header.ProtocolName, z-1);
+    sname = sprintf('%s.%04d.dcm', dicom_header.ProtocolName, z-1);
+    sname = fullfile(save_path, sname);
     
     % Get and write slice to file
     temp = X(:,:,z);
