@@ -115,11 +115,9 @@ dicom_header.BodyPartExamined = char(dicom_header.BodyPart);
 
 %}
 
-%% Set up funciton paths
+%% Set up function paths
 
-[mpath, ~] = fileparts(mfilename('fullpath'));
-addpath(fullfile(mpath, 'jsonlab-1.5'));
-addpath(fullfile(mpath, 'NIfTI_Tools'));
+update_paths;
 
 %% Unpack the header information
 
@@ -205,11 +203,15 @@ dicom_header.RescaleIntercept = -1200;
 dicom_header.RescaleSlope = 1;
 
 % Acquisition settings
+% Convert numeric entries to double
 dicom_header.ExposureTime = str2double(dicom_header.ExposureTime);
 dicom_header.XrayTubeCurrent = str2double(dicom_header.XrayTubeCurrent);
 dicom_header.Exposure = str2double(dicom_header.Exposure);
 dicom_header.GeneratorPower = str2double(dicom_header.GeneratorPower);
 dicom_header.FocalSpot = str2double(dicom_header.FocalSpot);
+dicom_header.PixelSpacing= [str2double(dicom_header.PixelSpacing),...
+                            str2double(dicom_header.PixelSpacing)]';
+dicom_header.SliceThickness = str2double(dicom_header.SliceThickness);
 
 dicom_header.StudyDate = datestr(study_date, 'YYYYmmdd');
 dicom_header.SeriesDate = datestr(study_date, 'YYYYmmdd');
@@ -219,6 +221,9 @@ dicom_header.ContentDate = datestr(study_date, 'YYYYmmdd');
 dicom_header.StudyTime= datestr(t, 'hhmmss');
 dicom_header.SeriesTime= datestr(t, 'hhmmss');
 dicom_header.AcquisitionTime= datestr(t, 'hhmmss');
+
+
+
 
 
 %% Convert image volume to 16 bit
