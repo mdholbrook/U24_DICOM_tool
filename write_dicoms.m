@@ -130,6 +130,9 @@ fprintf('Processing DICOM header from file:\n\t%s\n', fullfile(header_file));
 X = load_nii(image_file);
 X = X.img;
 
+% Account for MATLAB's transpose of NifTi files
+X = permute(X, [2, 1, 3]);
+
 %% Check that X has been converted to HU
 
 % Find maxima in the histogram - can be buggy
